@@ -5,6 +5,8 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { League } from 'src/leagues/league.entity';
+import { LeagueParticipant } from 'src/league-participants/league-participant.entity';
 
 @Entity()
 export class User {
@@ -25,4 +27,10 @@ export class User {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @OneToMany(() => League, league => league.createdBy)
+  leaguesCreated: League[];
+
+  @OneToMany(() => LeagueParticipant, lp => lp.user)
+  leagueParticipants: LeagueParticipant[];
 }

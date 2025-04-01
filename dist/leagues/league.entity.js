@@ -9,54 +9,57 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.League = void 0;
 const typeorm_1 = require("typeorm");
-const league_entity_1 = require("../leagues/league.entity");
+const user_entity_1 = require("../users/user.entity");
 const league_participant_entity_1 = require("../league-participants/league-participant.entity");
-let User = class User {
+let League = class League {
     id;
-    email;
-    nickname;
-    passwordHash;
-    role;
+    name;
+    description;
+    startDate;
+    endDate;
+    createdBy;
     createdAt;
-    leaguesCreated;
-    leagueParticipants;
+    participants;
 };
-exports.User = User;
+exports.League = League;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], User.prototype, "id", void 0);
+], League.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 100, unique: true }),
+    (0, typeorm_1.Column)(),
     __metadata("design:type", String)
-], User.prototype, "email", void 0);
+], League.prototype, "name", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 30 }),
+    (0, typeorm_1.Column)({ type: 'text', nullable: true }),
     __metadata("design:type", String)
-], User.prototype, "nickname", void 0);
+], League.prototype, "description", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ length: 100 }),
-    __metadata("design:type", String)
-], User.prototype, "passwordHash", void 0);
+    (0, typeorm_1.Column)({ type: 'date' }),
+    __metadata("design:type", Date)
+], League.prototype, "startDate", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ default: 'player' }),
-    __metadata("design:type", String)
-], User.prototype, "role", void 0);
+    (0, typeorm_1.Column)({ type: 'date' }),
+    __metadata("design:type", Date)
+], League.prototype, "endDate", void 0);
+__decorate([
+    (0, typeorm_1.ManyToOne)(() => user_entity_1.User, user => user.leaguesCreated, {
+        nullable: false,
+        onDelete: 'CASCADE'
+    }),
+    __metadata("design:type", user_entity_1.User)
+], League.prototype, "createdBy", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
-], User.prototype, "createdAt", void 0);
+], League.prototype, "createdAt", void 0);
 __decorate([
-    (0, typeorm_1.OneToMany)(() => league_entity_1.League, league => league.createdBy),
+    (0, typeorm_1.OneToMany)(() => league_participant_entity_1.LeagueParticipant, lp => lp.league),
     __metadata("design:type", Array)
-], User.prototype, "leaguesCreated", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => league_participant_entity_1.LeagueParticipant, lp => lp.user),
-    __metadata("design:type", Array)
-], User.prototype, "leagueParticipants", void 0);
-exports.User = User = __decorate([
+], League.prototype, "participants", void 0);
+exports.League = League = __decorate([
     (0, typeorm_1.Entity)()
-], User);
-//# sourceMappingURL=user.entity.js.map
+], League);
+//# sourceMappingURL=league.entity.js.map
