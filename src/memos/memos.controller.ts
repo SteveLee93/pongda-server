@@ -13,11 +13,11 @@ export class MemosController {
     @Param('id', ParseIntPipe) matchId: number,
     @Body('content') content: string,
   ) {
-    return this.memosService.saveMemo(req.user, matchId, content);
+    return this.memosService.saveMemo(req.user.userId, matchId, content);
   }
 
   @Get()
   async getMyMemo(@Req() req, @Param('id', ParseIntPipe) matchId: number) {
-    return this.memosService.getMyMemo(req.user, matchId);
+    return this.memosService.getMyMemo(req.user.userId, matchId);
   }
 }

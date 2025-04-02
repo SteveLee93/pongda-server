@@ -32,8 +32,12 @@ let MatchesService = class MatchesService {
         const league = await this.leagueRepo.findOneBy({ id: dto.leagueId });
         const player1 = await this.userRepo.findOneBy({ id: dto.player1Id });
         const player2 = await this.userRepo.findOneBy({ id: dto.player2Id });
-        if (!league || !player1 || !player2)
+        if (!league || !player1 || !player2) {
             throw new common_1.NotFoundException('리그나 유저가 없습니다.');
+        }
+        if (player1.id === player2.id) {
+            throw new common_1.BadRequestException('같은 플레이어끼리는 매치를 할 수 없습니다.');
+        }
         let winsP1 = 0;
         let winsP2 = 0;
         const sets = dto.sets.map(set => {

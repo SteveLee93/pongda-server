@@ -22,10 +22,10 @@ let MemosController = class MemosController {
         this.memosService = memosService;
     }
     async saveMemo(req, matchId, content) {
-        return this.memosService.saveMemo(req.user, matchId, content);
+        return this.memosService.saveMemo(req.user.userId, matchId, content);
     }
     async getMyMemo(req, matchId) {
-        return this.memosService.getMyMemo(req.user, matchId);
+        return this.memosService.getMyMemo(req.user.userId, matchId);
     }
 };
 exports.MemosController = MemosController;

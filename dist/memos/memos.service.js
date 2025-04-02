@@ -25,18 +25,23 @@ let MemosService = class MemosService {
         this.memoRepo = memoRepo;
         this.matchRepo = matchRepo;
     }
-    async saveMemo(user, matchId, content) {
+    async saveMemo(userId, matchId, content) {
         const match = await this.matchRepo.findOneBy({ id: matchId });
         if (!match)
             throw new common_1.NotFoundException('경기를 찾을 수 없습니다.');
+        const userRef = { id: userId };
         let memo = await this.memoRepo.findOne({
-            where: { user: { id: user.id }, match: { id: matchId } },
+            where: { user: { id: userId }, match: { id: matchId } },
         });
         if (memo) {
             memo.content = content;
         }
         else {
-            memo = this.memoRepo.create({ user, match, content });
+            memo = this.memoRepo.create({
+                user: userRef,
+                match,
+                content
+            });
         }
         return this.memoRepo.save(memo);
     }

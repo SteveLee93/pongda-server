@@ -1,8 +1,16 @@
-import { Controller, Post, Body, Get, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, UseGuards, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+
+interface RequestWithUser extends Request {
+  user: {
+    userId: number;
+  };
+}
 
 @ApiTags('Users')
 @Controller('users')
@@ -19,6 +27,20 @@ export class UsersController {
   @ApiOperation({ summary: '모든 사용자 조회', description: '모든 사용자를 조회합니다.' })
   async getAllUsers(): Promise<User[]> {
     return this.usersService.findAll();
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me/stats')
+  @ApiOperation({ summary: '내 통계 조회', description: '내 통계를 조회합니다.' })
+  async getMyStats(@Req() req: RequestWithUser) {
+    return this.usersService.getMyStats(req.user.userId);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  @ApiOperation({ summary: '내 페이지 조회', description: '내 페이지를 조회합니다.' })
+  async getMe(@Req() req: RequestWithUser) {
+    return this.usersService.getMyPage(req.user.userId);
   }
 
   @Get(':id')

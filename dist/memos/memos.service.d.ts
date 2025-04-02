@@ -6,6 +6,6 @@ export declare class MemosService {
     private memoRepo;
     private matchRepo;
     constructor(memoRepo: Repository<Memo>, matchRepo: Repository<Match>);
-    saveMemo(user: User, matchId: number, content: string): Promise<Memo>;
+    saveMemo(userId: number, matchId: number, content: string): Promise<Memo>;
     getMyMemo(user: User, matchId: number): Promise<Memo | null>;
 }

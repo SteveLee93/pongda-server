@@ -14,18 +14,25 @@ export class MemosService {
     private matchRepo: Repository<Match>,
   ) {}
 
-  async saveMemo(user: User, matchId: number, content: string): Promise<Memo> {
+  async saveMemo(userId: number, matchId: number, content: string): Promise<Memo> {
     const match = await this.matchRepo.findOneBy({ id: matchId });
     if (!match) throw new NotFoundException('경기를 찾을 수 없습니다.');
   
+    // User 엔티티 참조 객체 생성
+    const userRef = { id: userId } as User;
+  
     let memo = await this.memoRepo.findOne({
-      where: { user: { id: user.id }, match: { id: matchId } },
+      where: { user: { id: userId }, match: { id: matchId } },
     });
   
     if (memo) {
       memo.content = content;
     } else {
-      memo = this.memoRepo.create({ user, match, content });
+      memo = this.memoRepo.create({ 
+        user: userRef,  // User 참조 객체 사용
+        match, 
+        content 
+      });
     }
   
     return this.memoRepo.save(memo);

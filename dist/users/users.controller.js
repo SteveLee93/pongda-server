@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
 const create_user_dto_1 = require("./dto/create-user.dto");
 const swagger_1 = require("@nestjs/swagger");
+const passport_1 = require("@nestjs/passport");
 let UsersController = class UsersController {
     usersService;
     constructor(usersService) {
@@ -27,6 +28,12 @@ let UsersController = class UsersController {
     }
     async getAllUsers() {
         return this.usersService.findAll();
+    }
+    async getMyStats(req) {
+        return this.usersService.getMyStats(req.user.userId);
+    }
+    async getMe(req) {
+        return this.usersService.getMyPage(req.user.userId);
     }
     async getUserById(id) {
         return this.usersService.findOne(id);
@@ -48,6 +55,24 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getAllUsers", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.Get)('me/stats'),
+    (0, swagger_1.ApiOperation)({ summary: '내 통계 조회', description: '내 통계를 조회합니다.' }),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getMyStats", null);
+__decorate([
+    (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
+    (0, common_1.Get)('me'),
+    (0, swagger_1.ApiOperation)({ summary: '내 페이지 조회', description: '내 페이지를 조회합니다.' }),
+    __param(0, (0, common_1.Req)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getMe", null);
 __decorate([
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: '사용자 조회', description: '특정 사용자를 조회합니다.' }),

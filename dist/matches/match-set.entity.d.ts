@@ -1,4 +1,4 @@
-import { Match } from './match.entity';
+import { Match } from 'src/matches/match.entity';
 export declare class MatchSet {
     id: number;
     match: Match;
