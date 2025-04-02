@@ -3,6 +3,8 @@ import {
     NotFoundException,
     BadRequestException,
     ForbiddenException,
+    Inject,
+    forwardRef
   } from '@nestjs/common';
   import { InjectRepository } from '@nestjs/typeorm';
   import { Match } from './match.entity';
@@ -21,6 +23,7 @@ import {
       private leagueRepo: Repository<League>,
       @InjectRepository(User)
       private userRepo: Repository<User>,
+      @Inject(forwardRef(() => LeaguesService))
       private leagueService: LeaguesService,
     ) {}
   
