@@ -124,4 +124,31 @@ export class LeaguesService {
     });
     return count > 0;
   }
+
+  async findOne(id: number): Promise<League> {
+    const league = await this.leagueRepo.findOne({
+      where: { id },
+      relations: {
+        createdBy: true,  // createdBy 관계 포함
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        startDate: true,
+        endDate: true,
+        createdAt: true,
+        createdBy: {
+          id: true,
+          nickname: true  // createdBy에서 필요한 필드만 선택
+        }
+      }
+    });
+
+    if (!league) {
+      throw new NotFoundException('리그를 찾을 수 없습니다.');
+    }
+
+    return league;
+  }
 }

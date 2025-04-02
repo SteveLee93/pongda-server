@@ -50,4 +50,10 @@ export class LeaguesController {
   async getParticipants(@Param('id', ParseIntPipe) id: number) {
     return this.leaguesService.getParticipants(id);
   }
+
+  @Get(':id')
+  @ApiOperation({ summary: '리그 상세 조회', description: '특정 리그의 상세 정보를 조회합니다.' })
+  async getOne(@Param('id', ParseIntPipe) id: number) {
+    return this.leaguesService.findOne(id);
+  }
 } 
