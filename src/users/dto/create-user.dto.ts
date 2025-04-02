@@ -9,7 +9,7 @@ export class CreateUserDto {
   nickname: string;
 
   @IsString()
-  @Length(6, 100)
+  @Length(4, 100)
   password: string;
 
   @IsIn(['player', 'manager'])

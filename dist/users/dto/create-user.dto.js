@@ -29,7 +29,7 @@ __decorate([
 ], CreateUserDto.prototype, "nickname", void 0);
 __decorate([
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.Length)(6, 100),
+    (0, class_validator_1.Length)(4, 100),
     __metadata("design:type", String)
 ], CreateUserDto.prototype, "password", void 0);
 __decorate([
