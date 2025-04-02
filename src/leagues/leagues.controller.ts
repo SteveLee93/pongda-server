@@ -3,7 +3,9 @@ import { CreateLeagueDto } from './dto/create-league.dto';
 import { LeaguesService } from './leagues.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from '../users/users.service';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Leagues')
 @Controller('leagues')
 export class LeaguesController {
   constructor(
@@ -13,6 +15,7 @@ export class LeaguesController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post()
+  @ApiOperation({ summary: '리그 생성', description: '새로운 리그를 생성합니다.' })
   async create(@Body() dto: CreateLeagueDto, @Req() req: any) {
     console.log('User object:', req.user);
     try {
@@ -26,12 +29,14 @@ export class LeaguesController {
   }
 
   @Get()
+  @ApiOperation({ summary: '모든 리그 조회', description: '모든 리그를 조회합니다.' })
   async getAll() {
     return this.leaguesService.findAll();
   }
 
   @UseGuards(AuthGuard('jwt'))
   @Post(':id/join')
+  @ApiOperation({ summary: '리그 참여', description: '리그에 참여합니다.' })
   async join(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
     const user = await this.usersService.findOne(req.user.userId);
     if (!user) {
@@ -41,6 +46,7 @@ export class LeaguesController {
   }
 
   @Get(':id/users')
+  @ApiOperation({ summary: '리그 참여자 조회', description: '리그의 참여자를 조회합니다.' })
   async getParticipants(@Param('id', ParseIntPipe) id: number) {
     return this.leaguesService.getParticipants(id);
   }

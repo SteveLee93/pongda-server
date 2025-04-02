@@ -16,6 +16,7 @@ exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
 const auth_service_1 = require("./auth.service");
 const passport_1 = require("@nestjs/passport");
+const swagger_1 = require("@nestjs/swagger");
 let AuthController = class AuthController {
     authService;
     constructor(authService) {
@@ -31,6 +32,7 @@ let AuthController = class AuthController {
 exports.AuthController = AuthController;
 __decorate([
     (0, common_1.Post)('login'),
+    (0, swagger_1.ApiOperation)({ summary: '로그인', description: '이메일과 비밀번호를 입력하여 로그인합니다.' }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -39,12 +41,14 @@ __decorate([
 __decorate([
     (0, common_1.UseGuards)((0, passport_1.AuthGuard)('jwt')),
     (0, common_1.Get)('profile'),
+    (0, swagger_1.ApiOperation)({ summary: '프로필 조회', description: '로그인한 사용자의 프로필 정보를 조회합니다.' }),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "getProfile", null);
 exports.AuthController = AuthController = __decorate([
+    (0, swagger_1.ApiTags)('Auth'),
     (0, common_1.Controller)('auth'),
     __metadata("design:paramtypes", [auth_service_1.AuthService])
 ], AuthController);
