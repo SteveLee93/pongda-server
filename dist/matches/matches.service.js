@@ -19,14 +19,17 @@ const match_entity_1 = require("./match.entity");
 const typeorm_2 = require("typeorm");
 const league_entity_1 = require("../leagues/league.entity");
 const user_entity_1 = require("../users/user.entity");
+const leagues_service_1 = require("../leagues/leagues.service");
 let MatchesService = class MatchesService {
     matchRepo;
     leagueRepo;
     userRepo;
-    constructor(matchRepo, leagueRepo, userRepo) {
+    leagueService;
+    constructor(matchRepo, leagueRepo, userRepo, leagueService) {
         this.matchRepo = matchRepo;
         this.leagueRepo = leagueRepo;
         this.userRepo = userRepo;
+        this.leagueService = leagueService;
     }
     async create(dto) {
         const league = await this.leagueRepo.findOneBy({ id: dto.leagueId });
@@ -37,6 +40,11 @@ let MatchesService = class MatchesService {
         }
         if (player1.id === player2.id) {
             throw new common_1.BadRequestException('같은 플레이어끼리는 매치를 할 수 없습니다.');
+        }
+        const isP1InLeague = await this.leagueService.isUserInLeague(player1.id, league.id);
+        const isP2InLeague = await this.leagueService.isUserInLeague(player2.id, league.id);
+        if (!isP1InLeague || !isP2InLeague) {
+            throw new common_1.ForbiddenException('선수 중 최소 한 명이 리그 참가자가 아닙니다.');
         }
         let winsP1 = 0;
         let winsP2 = 0;
@@ -95,6 +103,7 @@ exports.MatchesService = MatchesService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(user_entity_1.User)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        leagues_service_1.LeaguesService])
 ], MatchesService);
 //# sourceMappingURL=matches.service.js.map

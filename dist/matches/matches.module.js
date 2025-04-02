@@ -15,13 +15,14 @@ const match_entity_1 = require("./match.entity");
 const match_set_entity_1 = require("./match-set.entity");
 const league_entity_1 = require("../leagues/league.entity");
 const user_entity_1 = require("../users/user.entity");
+const leagues_service_1 = require("../leagues/leagues.service");
 let MatchesModule = class MatchesModule {
 };
 exports.MatchesModule = MatchesModule;
 exports.MatchesModule = MatchesModule = __decorate([
     (0, common_1.Module)({
         imports: [typeorm_1.TypeOrmModule.forFeature([match_entity_1.Match, match_set_entity_1.MatchSet, league_entity_1.League, user_entity_1.User])],
-        providers: [matches_service_1.MatchesService],
+        providers: [matches_service_1.MatchesService, leagues_service_1.LeaguesService],
         controllers: [matches_controller_1.MatchesController],
     })
 ], MatchesModule);

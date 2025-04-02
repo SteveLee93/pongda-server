@@ -2,6 +2,7 @@ import {
     Injectable,
     NotFoundException,
     BadRequestException,
+    ForbiddenException,
   } from '@nestjs/common';
   import { InjectRepository } from '@nestjs/typeorm';
   import { Match } from './match.entity';
@@ -9,7 +10,8 @@ import {
   import { CreateMatchDto } from './dto/create-match.dto';
   import { League } from 'src/leagues/league.entity';
   import { User } from 'src/users/user.entity';
-  
+  import { LeaguesService } from 'src/leagues/leagues.service';
+
   @Injectable()
   export class MatchesService {
     constructor(
@@ -19,13 +21,15 @@ import {
       private leagueRepo: Repository<League>,
       @InjectRepository(User)
       private userRepo: Repository<User>,
+      private leagueService: LeaguesService,
     ) {}
   
     async create(dto: CreateMatchDto): Promise<Match> {
         const league = await this.leagueRepo.findOneBy({ id: dto.leagueId });
         const player1 = await this.userRepo.findOneBy({ id: dto.player1Id });
         const player2 = await this.userRepo.findOneBy({ id: dto.player2Id });
-      
+        
+
         if (!league || !player1 || !player2) {
           throw new NotFoundException('리그나 유저가 없습니다.');
         }
@@ -35,6 +39,14 @@ import {
           throw new BadRequestException('같은 플레이어끼리는 매치를 할 수 없습니다.');
         }
       
+        // 리그 참가자 체크
+        const isP1InLeague = await this.leagueService.isUserInLeague(player1.id, league.id);
+        const isP2InLeague = await this.leagueService.isUserInLeague(player2.id, league.id);
+
+        if (!isP1InLeague || !isP2InLeague) {
+            throw new ForbiddenException('선수 중 최소 한 명이 리그 참가자가 아닙니다.');
+        }
+
         let winsP1 = 0;
         let winsP2 = 0;
       

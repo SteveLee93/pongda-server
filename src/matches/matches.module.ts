@@ -6,10 +6,10 @@ import { Match } from './match.entity';
 import { MatchSet } from './match-set.entity';
 import { League } from 'src/leagues/league.entity';
 import { User } from 'src/users/user.entity';
-
+import { LeaguesService } from 'src/leagues/leagues.service';
 @Module({
   imports: [TypeOrmModule.forFeature([Match, MatchSet, League, User])],
-  providers: [MatchesService],
+  providers: [MatchesService, LeaguesService],
   controllers: [MatchesController],
 })
 export class MatchesModule {}

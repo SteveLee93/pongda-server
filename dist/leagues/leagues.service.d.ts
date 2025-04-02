@@ -13,4 +13,5 @@ export declare class LeaguesService {
     findAll(): Promise<League[]>;
     joinLeague(leagueId: number, user: User): Promise<LeagueParticipant>;
     getParticipants(leagueId: number): Promise<User[]>;
+    isUserInLeague(userId: number, leagueId: number): Promise<boolean>;
 }

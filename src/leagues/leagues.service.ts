@@ -114,4 +114,14 @@ export class LeaguesService {
   
     return participants.map(p => p.user);
   }
+
+  async isUserInLeague(userId: number, leagueId: number): Promise<boolean> {
+    const count = await this.leagueParticipantRepo.count({
+      where: {
+        user: { id: userId },
+        league: { id: leagueId },
+      },
+    });
+    return count > 0;
+  }
 }

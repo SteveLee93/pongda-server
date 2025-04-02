@@ -101,6 +101,15 @@ let LeaguesService = class LeaguesService {
         });
         return participants.map(p => p.user);
     }
+    async isUserInLeague(userId, leagueId) {
+        const count = await this.leagueParticipantRepo.count({
+            where: {
+                user: { id: userId },
+                league: { id: leagueId },
+            },
+        });
+        return count > 0;
+    }
 };
 exports.LeaguesService = LeaguesService;
 exports.LeaguesService = LeaguesService = __decorate([
