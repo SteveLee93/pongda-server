@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { League } from 'src/leagues/league.entity';
 import { LeagueParticipant } from 'src/league-participants/league-participant.entity';
+import { Memo } from 'src/memos/memo.entity';
 
 @Entity()
 export class User {
@@ -33,4 +34,7 @@ export class User {
 
   @OneToMany(() => LeagueParticipant, lp => lp.user)
   leagueParticipants: LeagueParticipant[];
+
+  @OneToMany(() => Memo, memo => memo.user)
+  memos: Memo[];
 }

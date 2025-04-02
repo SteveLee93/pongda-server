@@ -13,6 +13,7 @@ exports.User = void 0;
 const typeorm_1 = require("typeorm");
 const league_entity_1 = require("../leagues/league.entity");
 const league_participant_entity_1 = require("../league-participants/league-participant.entity");
+const memo_entity_1 = require("../memos/memo.entity");
 let User = class User {
     id;
     email;
@@ -22,6 +23,7 @@ let User = class User {
     createdAt;
     leaguesCreated;
     leagueParticipants;
+    memos;
 };
 exports.User = User;
 __decorate([
@@ -56,6 +58,10 @@ __decorate([
     (0, typeorm_1.OneToMany)(() => league_participant_entity_1.LeagueParticipant, lp => lp.user),
     __metadata("design:type", Array)
 ], User.prototype, "leagueParticipants", void 0);
+__decorate([
+    (0, typeorm_1.OneToMany)(() => memo_entity_1.Memo, memo => memo.user),
+    __metadata("design:type", Array)
+], User.prototype, "memos", void 0);
 exports.User = User = __decorate([
     (0, typeorm_1.Entity)()
 ], User);

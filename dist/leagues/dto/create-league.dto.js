@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateLeagueDto = void 0;
 const class_validator_1 = require("class-validator");
+const swagger_1 = require("@nestjs/swagger");
 class CreateLeagueDto {
     name;
     description;
@@ -19,21 +20,25 @@ class CreateLeagueDto {
 }
 exports.CreateLeagueDto = CreateLeagueDto;
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: '리그 이름', example: '리그 이름' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.Length)(2, 50),
     __metadata("design:type", String)
 ], CreateLeagueDto.prototype, "name", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: '리그 설명', example: '리그 설명' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.Length)(0, 500),
     __metadata("design:type", String)
 ], CreateLeagueDto.prototype, "description", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: '리그 시작일', example: '2025-01-01' }),
     (0, class_validator_1.IsDateString)(),
     __metadata("design:type", String)
 ], CreateLeagueDto.prototype, "startDate", void 0);
 __decorate([
+    (0, swagger_1.ApiProperty)({ description: '리그 종료일', example: '2025-01-01' }),
     (0, class_validator_1.IsDateString)(),
     __metadata("design:type", String)
 ], CreateLeagueDto.prototype, "endDate", void 0);

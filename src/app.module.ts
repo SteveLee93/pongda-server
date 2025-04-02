@@ -4,6 +4,8 @@ import { UsersModule } from './users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { LeaguesModule } from './leagues/leagues.module';
+import { MatchesModule } from './matches/matches.module';
+import { MemosModule } from './memos/memos.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -20,6 +22,8 @@ import { LeaguesModule } from './leagues/leagues.module';
     UsersModule,
     AuthModule,
     LeaguesModule,
+    MatchesModule,
+    MemosModule,
   ],
 })
 export class AppModule { }
