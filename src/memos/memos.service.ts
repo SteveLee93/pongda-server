@@ -38,12 +38,28 @@ export class MemosService {
     return this.memoRepo.save(memo);
   }
   
-  async getMyMemo(user: User, matchId: number): Promise<Memo | null> {
-    return this.memoRepo.findOne({
+  async getMyMemo(userId: number, matchId: number): Promise<Memo | null> {
+    const memo = await this.memoRepo.findOne({
       where: {
-        user: { id: user.id },
-        match: { id: matchId },
+        user: { id: userId },
+        match: { id: matchId }
       },
+      relations: ['match'],  // match 정보도 함께 로드
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        updatedAt: true,
+        match: {
+          id: true
+        }
+      }
     });
+
+    if (!memo) {
+      return null;  // 메모가 없는 경우 null 반환
+    }
+
+    return memo;
   }
 }

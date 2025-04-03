@@ -22,7 +22,12 @@ export class MemosController {
 
   @Get()
   @ApiOperation({ summary: '내 메모 조회', description: '내 메모를 조회합니다.' })
-  async getMyMemo(@Req() req, @Param('id', ParseIntPipe) matchId: number) {
-    return this.memosService.getMyMemo(req.user.userId, matchId);
+  async getMyMemo(
+    @Req() req,
+    @Param('id', ParseIntPipe) matchId: number
+  ) {
+    const userId = req.user.userId;
+    console.log('Fetching memo for userId:', userId, 'matchId:', matchId);  // 디버깅용
+    return this.memosService.getMyMemo(userId, matchId);
   }
 }
