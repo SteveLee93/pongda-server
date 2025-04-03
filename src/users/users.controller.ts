@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, UseGuards, Req } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, UseGuards, Req, ConflictException, BadRequestException } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -20,7 +20,14 @@ export class UsersController {
   @Post()
   @ApiOperation({ summary: '사용자 생성', description: '새로운 사용자를 생성합니다.' })
   async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createUserDto);
+    try {
+      return await this.usersService.create(createUserDto);
+    } catch (error) {
+      if (error instanceof ConflictException) {
+        throw error;  // 이메일 중복 에러
+      }
+      throw new BadRequestException('사용자 생성에 실패했습니다.');
+    }
   }
 
   @Get()

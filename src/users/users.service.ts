@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
@@ -19,15 +19,30 @@ export class UsersService {
   ) { }
 
   async create(userData: CreateUserDto): Promise<User> {
+    // 이메일 중복 체크
+    const existingUser = await this.findByEmail(userData.email);
+    if (existingUser) {
+      throw new ConflictException('이미 사용 중인 이메일입니다.');
+    }
+
     const user = this.usersRepository.create();
-    user.email = userData.email ?? '';
-    user.nickname = userData.nickname ?? '';
+    user.email = userData.email;
+    user.nickname = userData.nickname;
+    
     // 비밀번호 해시 처리
     const salt = await bcrypt.genSalt(10);
     user.passwordHash = await bcrypt.hash(userData.password, salt);
     user.role = userData.role ?? 'player';
 
-    return this.usersRepository.save(user);
+    try {
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      // 혹시 모를 다른 중복 에러 처리
+      if (error.code === 'ER_DUP_ENTRY') {
+        throw new ConflictException('이미 사용 중인 이메일입니다.');
+      }
+      throw error;
+    }
   }
 
   async findAll(): Promise<User[]> {
