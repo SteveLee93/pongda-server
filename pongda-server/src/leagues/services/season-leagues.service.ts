@@ -6,6 +6,7 @@ import { ParentLeague } from 'src/leagues/entities/parent-league.entity';
 import { UsersService } from 'src/users/users.service';
 import { CreateSeasonLeagueDto } from 'src/leagues/dto/create-season-league.dto';
 import { LeagueParticipant } from 'src/league-participants/league-participant.entity';
+import { Between } from 'typeorm';
 
 @Injectable()
 export class SeasonLeaguesService {
@@ -75,6 +76,51 @@ export class SeasonLeaguesService {
       ],
       order: {
         startDateTime: 'DESC'
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        startDateTime: true,
+        status: true,
+        matchFormat: true,
+        gameType: true,
+        qualifierFormat: true,
+        playoffFormat: true,
+        parentLeague: {
+          id: true,
+          name: true,
+          city: true,
+          district: true
+        },
+        createdBy: {
+          id: true,
+          nickname: true
+        }
+      }
+    });
+  }
+
+  async findByDate(date: string): Promise<SeasonLeague[]> {
+    // 입력받은 날짜의 시작과 끝 설정
+    const startDate = new Date(date);
+    startDate.setHours(0, 0, 0, 0);
+    
+    const endDate = new Date(date);
+    endDate.setHours(23, 59, 59, 999);
+
+    return this.seasonLeagueRepo.find({
+      where: {
+        startDateTime: Between(startDate, endDate)
+      },
+      relations: [
+        'createdBy',
+        'parentLeague',
+        'participants',
+        'participants.user'
+      ],
+      order: {
+        startDateTime: 'ASC'
       },
       select: {
         id: true,

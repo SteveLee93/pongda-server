@@ -31,5 +31,14 @@ export class SeasonLeaguesController {
     return this.seasonLeaguesService.findAll();
   }
 
+  @Get('date/:date')
+  @ApiOperation({ 
+    summary: '특정 날짜의 시즌 리그 목록', 
+    description: '지정된 날짜에 시작하는 시즌 리그를 조회합니다. (날짜 형식: YYYY-MM-DD)' 
+  })
+  async findByDate(@Param('date') date: string) {
+    return this.seasonLeaguesService.findByDate(date);
+  }
+
   // ... 기존의 다른 엔드포인트들 (참가자 관리, 예선/본선 관리 등)
 }
