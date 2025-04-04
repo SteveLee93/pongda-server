@@ -7,15 +7,25 @@ import { useState, useEffect } from 'react';
 import Navigation from '@/components/Navigation';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import Image from 'next/image';
+import { format } from 'date-fns';
 
 interface League {
   id: number;
   name: string;
   description: string;
-  startDate: string;
-  endDate: string;
+  startDateTime: string;
   status: 'UPCOMING' | 'IN_PROGRESS' | 'COMPLETED';
   participantCount?: number;
+  parentLeague: {
+    city: string;
+    district: string;
+  };
+  participants: Array<{
+    user: {
+      id: number;
+      nickname: string;
+    };
+  }>;
 }
 
 const banners = [
@@ -42,13 +52,29 @@ export default function HomePage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [currentBanner, setCurrentBanner] = useState(0);
   
-  const { data: leagues } = useQuery<League[]>({
-    queryKey: ['leagues'],
+  const { data: leagues, isLoading: isLeaguesLoading, refetch } = useQuery<League[]>({
+    queryKey: ['leagues', format(selectedDate, 'yyyy-MM-dd')],
     queryFn: async () => {
-      const res = await api.get('/leagues');
-      return res.data;
+      try {
+        const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+        console.log('Requesting URL:', `/season-leagues/date/${formattedDate}`); // URL 로깅
+        
+        const res = await api.get(`/season-leagues/date/${formattedDate}`);
+        console.log('API Response:', res.data); // 응답 데이터 로깅
+        return res.data;
+      } catch (error) {
+        console.error('API Error:', error); // 에러 로깅
+        throw error;
+      }
     },
+    enabled: true,
   });
+
+  const handleDateSelect = (date: Date) => {
+    console.log('Selected date before format:', date); // 선택된 날짜 로깅
+    setSelectedDate(date);
+    refetch();
+  };
 
   // 자동 슬라이드
   useEffect(() => {
@@ -59,16 +85,18 @@ export default function HomePage() {
     return () => clearInterval(timer);
   }, []);
 
-  if (isLoading) {
+  if (isLoading || isLeaguesLoading) {
     return <LoadingSpinner />;
   }
 
   // 날짜 네비게이션을 위한 함수들
   const getDates = () => {
     const dates = [];
+    const today = new Date();
+    
     for (let i = -3; i <= 3; i++) {
-      const date = new Date();
-      date.setDate(selectedDate.getDate() + i);
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
       dates.push(date);
     }
     return dates;
@@ -111,7 +139,7 @@ export default function HomePage() {
         {getDates().map((date, index) => (
           <button
             key={date.toISOString()}
-            onClick={() => setSelectedDate(date)}
+            onClick={() => handleDateSelect(date)}
             className={`flex flex-col items-center min-w-[80px] p-3 rounded-lg ${
               date.toDateString() === selectedDate.toDateString()
                 ? 'bg-blue-500 text-white'
@@ -128,56 +156,57 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* 필터 옵션 */}
-      <div className="flex space-x-2 mb-6 overflow-x-auto">
-        <button className="px-4 py-2 bg-white rounded-full text-sm border">
-          서울 ▾
-        </button>
-        <button className="px-4 py-2 bg-yellow-100 rounded-full text-sm border border-yellow-200">
-          🌟 쉐탁
-        </button>
-        <button className="px-4 py-2 bg-white rounded-full text-sm border">
-          마감 가리기
-        </button>
-        <button className="px-4 py-2 bg-white rounded-full text-sm border">
-          성별 ▾
-        </button>
-        <button className="px-4 py-2 bg-white rounded-full text-sm border">
-          레벨 ▾
-        </button>
-        <button className="px-4 py-2 bg-white rounded-full text-sm border">
-          실내·그늘막
-        </button>
-      </div>
-
-      {/* 매치 리스트 */}
-      <div className="space-y-4">
-        {leagues?.map((league) => (
-          <Link
-            key={league.id}
-            href={isAuthenticated ? `/leagues/${league.id}` : `/login?redirect=/leagues/${league.id}`}
-            className="block bg-white p-4 rounded-lg shadow hover:shadow-md transition-all"
-          >
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="text-lg font-bold mb-1">{league.name}</div>
-                <div className="text-sm text-gray-500">
-                  {new Date(league.startDate).toLocaleTimeString('ko-KR', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
+      {/* 리그 리스트 */}
+      {isLeaguesLoading ? (
+        <LoadingSpinner />
+      ) : (
+        <div className="space-y-4">
+          {leagues && leagues.length > 0 ? (
+            leagues.map((league) => (
+              <Link
+                key={league.id}
+                href={isAuthenticated ? `/leagues/${league.id}` : `/login?redirect=/leagues/${league.id}`}
+                className="block bg-white p-4 rounded-lg shadow hover:shadow-md transition-all"
+              >
+                <div className="flex justify-between items-center">
+                  <div>
+                    <div className="text-lg font-bold mb-1">{league.name}</div>
+                    <div className="text-sm text-gray-500">
+                      {new Date(league.startDateTime).toLocaleTimeString('ko-KR', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">
+                      {league.parentLeague.city} {league.parentLeague.district} · 
+                      {league.participants.length}명 참여
+                    </div>
+                  </div>
+                  {league.status === 'UPCOMING' && (
+                    <button className="px-4 py-2 bg-blue-500 text-white rounded-lg">
+                      참가신청
+                    </button>
+                  )}
+                  {league.status === 'IN_PROGRESS' && (
+                    <span className="px-4 py-2 bg-green-500 text-white rounded-lg">
+                      진행중
+                    </span>
+                  )}
+                  {league.status === 'COMPLETED' && (
+                    <span className="px-4 py-2 bg-gray-500 text-white rounded-lg">
+                      종료
+                    </span>
+                  )}
                 </div>
-                <div className="text-xs text-gray-400 mt-1">
-                  남녀모두 · {league.participantCount}명 참여
-                </div>
-              </div>
-              <button className="px-4 py-2 bg-red-500 text-white rounded-lg">
-                마감임박!
-              </button>
+              </Link>
+            ))
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              {format(selectedDate, 'yyyy년 MM월 dd일')}에 예정된 리그가 없습니다.
             </div>
-          </Link>
-        ))}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

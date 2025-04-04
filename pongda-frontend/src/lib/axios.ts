@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { toast } from 'react-hot-toast';
 import { getToken } from '@/lib/token';
 
 const api = axios.create({
@@ -9,28 +8,37 @@ const api = axios.create({
   },
 });
 
-// 토큰 디버깅을 위한 인터셉터
-api.interceptors.request.use((config) => {
-  const token = getToken();
-  console.log('현재 저장된 토큰:', token);
+// Request Interceptor
+api.interceptors.request.use(
+  (config) => {
+    console.log('Request URL:', config.url); // URL 로깅
+    console.log('Request Method:', config.method); // 메서드 로깅
+    console.log('Request Headers:', config.headers); // 헤더 로깅
+    const token = getToken();
+    console.log('현재 저장된 토큰:', token);
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-    console.log('요청 헤더:', config.headers);
-  } else {
-    console.log('토큰이 없습니다!');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      console.log('요청 헤더:', config.headers);
+    } else {
+      console.log('토큰이 없습니다!');
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
-// 응답 인터셉터 추가
+// Response Interceptor
 api.interceptors.response.use(
   (response) => {
-    console.log('API 응답:', response.data);
+    console.log('Response Status:', response.status); // 응답 상태 로깅
+    console.log('Response Data:', response.data); // 응답 데이터 로깅
     return response;
   },
   (error) => {
-    console.error('API 에러:', error.response?.data || error);
+    console.error('API Error:', error.response || error); // 에러 로깅
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
       window.location.href = '/login';
