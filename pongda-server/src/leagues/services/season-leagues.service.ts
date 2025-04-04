@@ -146,5 +146,73 @@ export class SeasonLeaguesService {
     });
   }
 
+  async findOne(id: number): Promise<SeasonLeague> {
+    const league = await this.seasonLeagueRepo.findOne({
+      where: { id },
+      relations: [
+        'createdBy',
+        'parentLeague',
+        'participants',
+        'participants.user',
+        'matches',
+        'matches.player1',
+        'matches.player2',
+        'matches.winner'
+      ],
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        seasonInfo: true,
+        startDateTime: true,
+        status: true,
+        matchFormat: true,
+        gameType: true,
+        qualifierFormat: true,
+        playoffFormat: true,
+        parentLeague: {
+          id: true,
+          name: true,
+          city: true,
+          district: true
+        },
+        createdBy: {
+          id: true,
+          nickname: true
+        },
+        participants: {
+          id: true,
+          user: {
+            id: true,
+            nickname: true
+          }
+        },
+        matches: {
+          id: true,
+          scorePlayer1: true,
+          scorePlayer2: true,
+          player1: {
+            id: true,
+            nickname: true
+          },
+          player2: {
+            id: true,
+            nickname: true
+          },
+          winner: {
+            id: true,
+            nickname: true
+          }
+        }
+      }
+    });
+
+    if (!league) {
+      throw new NotFoundException('시즌 리그를 찾을 수 없습니다.');
+    }
+
+    return league;
+  }
+
   // ... 기존의 다른 메서드들 (참가자 관리, 예선/본선 관리 등)
 }

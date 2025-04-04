@@ -40,5 +40,14 @@ export class SeasonLeaguesController {
     return this.seasonLeaguesService.findByDate(date);
   }
 
+  @Get(':id')
+  @ApiOperation({ 
+    summary: '시즌 리그 상세 정보', 
+    description: '특정 시즌 리그의 상세 정보를 조회합니다.' 
+  })
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.seasonLeaguesService.findOne(id);
+  }
+
   // ... 기존의 다른 엔드포인트들 (참가자 관리, 예선/본선 관리 등)
 }
