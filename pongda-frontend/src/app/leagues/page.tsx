@@ -7,15 +7,21 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 
-type League = {
+type ParentLeague = {
   id: number;
   name: string;
   description: string;
-  startDate: string;
-  endDate: string;
+  city: string;
+  district: string;
   createdBy: {
     nickname: string;
   };
+  seasonLeagues: Array<{
+    id: number;
+    name: string;
+    startDateTime: string;
+    status: 'UPCOMING' | 'IN_PROGRESS' | 'COMPLETED';
+  }>;
 };
 
 export default function LeagueListPage() {
@@ -33,12 +39,12 @@ export default function LeagueListPage() {
     district: ''
   });
 
-  // 리그 목록 조회
-  const { data: leagues, isLoading, error } = useQuery<League[]>({
-    queryKey: ['leagues'],
+  // 상위 리그 목록 조회
+  const { data: parentLeagues, isLoading, error } = useQuery<ParentLeague[]>({
+    queryKey: ['parentLeagues'],
     queryFn: async () => {
       try {
-        const res = await api.get('/leagues');
+        const res = await api.get('/parent-leagues');
         return res.data;
       } catch (error: any) {
         // 인증 에러인 경우 로그인 페이지로 리다이렉션
@@ -104,20 +110,20 @@ export default function LeagueListPage() {
     <div className="max-w-4xl mx-auto p-4">
       <Navigation />
       
-      {/* 리그 목록 헤더 */}
+      {/* 상위 리그 목록 헤더 */}
       <div className="flex justify-between items-center my-8">
-        <h1 className="text-2xl font-bold text-gray-900">리그 목록</h1>
+        <h1 className="text-2xl font-bold text-gray-900">상위 리그 목록</h1>
         <button
           onClick={handleCreateClick}
           className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
         >
-          리그 만들기
+          상위 리그 만들기
         </button>
       </div>
 
-      {/* 리그 목록 */}
+      {/* 상위 리그 목록 */}
       <div className="space-y-4">
-        {leagues?.map((league) => (
+        {parentLeagues?.map((league) => (
           <Link href={`/leagues/${league.id}`} key={league.id}>
             <div className="block bg-white p-4 rounded-lg shadow hover:shadow-md transition-all">
               <div className="flex justify-between items-start">
@@ -126,9 +132,14 @@ export default function LeagueListPage() {
                   <p className="text-gray-600 mt-2">{league.description}</p>
                   <div className="flex items-center gap-4 mt-3">
                     <p className="text-sm text-gray-500">
-                      {new Date(league.startDate).toLocaleDateString()} ~ {new Date(league.endDate).toLocaleDateString()}
+                      {league.city} {league.district}
                     </p>
                     <p className="text-sm text-gray-500">생성자: {league.createdBy.nickname}</p>
+                  </div>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">
+                      시즌 리그 수: {league.seasonLeagues.length}개
+                    </p>
                   </div>
                 </div>
               </div>
