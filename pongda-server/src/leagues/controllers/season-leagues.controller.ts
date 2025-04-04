@@ -22,5 +22,14 @@ export class SeasonLeaguesController {
     return this.seasonLeaguesService.findByParentLeague(parentId);
   }
 
+  @Get()
+  @ApiOperation({ 
+    summary: '전체 시즌 리그 목록', 
+    description: '모든 시즌 리그를 조회합니다.' 
+  })
+  async findAll() {
+    return this.seasonLeaguesService.findAll();
+  }
+
   // ... 기존의 다른 엔드포인트들 (참가자 관리, 예선/본선 관리 등)
 }

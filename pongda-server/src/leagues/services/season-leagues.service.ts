@@ -65,5 +65,40 @@ export class SeasonLeaguesService {
     return count > 0;
   }
 
+  async findAll(): Promise<SeasonLeague[]> {
+    return this.seasonLeagueRepo.find({
+      relations: [
+        'createdBy',
+        'parentLeague',
+        'participants',
+        'participants.user'
+      ],
+      order: {
+        startDateTime: 'DESC'
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        startDateTime: true,
+        status: true,
+        matchFormat: true,
+        gameType: true,
+        qualifierFormat: true,
+        playoffFormat: true,
+        parentLeague: {
+          id: true,
+          name: true,
+          city: true,
+          district: true
+        },
+        createdBy: {
+          id: true,
+          nickname: true
+        }
+      }
+    });
+  }
+
   // ... 기존의 다른 메서드들 (참가자 관리, 예선/본선 관리 등)
 }
