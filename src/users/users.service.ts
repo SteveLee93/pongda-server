@@ -57,33 +57,23 @@ export class UsersService {
   }
 
   async getMyPage(userId: number) {
-    // 먼저 메모 데이터가 있는지 직접 확인
-    const memos = await this.memoRepo.find({
-      where: { user: { id: userId } },
-      relations: ['match'],
-    });
-    
-    console.log('Found memos:', memos);  // 디버깅용
-
     const user = await this.usersRepository.findOne({
       where: { id: userId },
       relations: [
-        'leaguesCreated',
+        'parentLeaguesCreated',
+        'seasonLeaguesCreated',
         'leagueParticipants',
-        'leagueParticipants.league',
+        'leagueParticipants.seasonLeague',
         'memos',
         'memos.match',
-        'memos.match.player1',  // match 관련 정보도 추가
+        'memos.match.player1',
         'memos.match.player2'
       ],
     });
 
     if (!user) throw new NotFoundException('사용자를 찾을 수 없습니다.');
 
-    // 내가 참가한 리그들만 추려냄
-    const joinedLeagues = user.leagueParticipants.map(lp => lp.league);
-
-    // 메모 데이터 변환
+    const joinedLeagues = user.leagueParticipants.map(lp => lp.seasonLeague);
     const formattedMemos = user.memos.map(memo => ({
       id: memo.id,
       match: memo.match.id,
@@ -98,7 +88,10 @@ export class UsersService {
       nickname: user.nickname,
       role: user.role,
       createdAt: user.createdAt,
-      leaguesCreated: user.leaguesCreated,
+      leaguesCreated: {
+        parentLeagues: user.parentLeaguesCreated || [],
+        seasonLeagues: user.seasonLeaguesCreated || []
+      },
       leaguesJoined: joinedLeagues,
       memos: formattedMemos
     };
@@ -115,27 +108,27 @@ export class UsersService {
         player2: true,
         winner: true,
         sets: true,
-        league: true  // league 관계 추가
+        seasonLeague: true
       },
       select: {
         id: true,
         scorePlayer1: true,
         scorePlayer2: true,
-        matchDate: true,
+        scheduledDateTime: true,
         player1: {
           id: true,
-          nickname: true  // 필요한 필드 추가
+          nickname: true
         },
         player2: {
           id: true,
-          nickname: true  // 필요한 필드 추가
+          nickname: true
         },
         winner: {
           id: true
         },
-        league: {
+        seasonLeague: {
           id: true,
-          name: true  // 필요한 필드 추가
+          name: true
         },
         sets: {
           id: true,

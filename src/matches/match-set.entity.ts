@@ -1,14 +1,14 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Match } from 'src/matches/match.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Match } from './match.entity';
 
 @Entity()
 export class MatchSet {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn() 
   @ApiProperty({ description: '세트 ID', example: 1 })
   id: number;
 
-  @ManyToOne(() => Match, match => match.sets, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Match, match => match.sets)
   @ApiProperty({ description: '매치 ID', example: 1 })
   match: Match;
 

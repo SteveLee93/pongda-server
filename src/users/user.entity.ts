@@ -5,9 +5,10 @@ import {
   CreateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { League } from 'src/leagues/league.entity';
 import { LeagueParticipant } from 'src/league-participants/league-participant.entity';
 import { Memo } from 'src/memos/memo.entity';
+import { ParentLeague } from 'src/leagues/entities/parent-league.entity';
+import { SeasonLeague } from 'src/leagues/entities/season-league.entity';
 
 @Entity()
 export class User {
@@ -29,10 +30,13 @@ export class User {
   @CreateDateColumn()
   createdAt: Date;
 
-  @OneToMany(() => League, league => league.createdBy)
-  leaguesCreated: League[];
+  @OneToMany(() => ParentLeague, parentLeague => parentLeague.createdBy)
+  parentLeaguesCreated: ParentLeague[];
 
-  @OneToMany(() => LeagueParticipant, lp => lp.user)
+  @OneToMany(() => SeasonLeague, seasonLeague => seasonLeague.createdBy)
+  seasonLeaguesCreated: SeasonLeague[];
+
+  @OneToMany(() => LeagueParticipant, participant => participant.user)
   leagueParticipants: LeagueParticipant[];
 
   @OneToMany(() => Memo, memo => memo.user)

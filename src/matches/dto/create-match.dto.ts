@@ -1,4 +1,4 @@
-import { IsArray, IsInt, IsPositive, ValidateNested } from 'class-validator';
+import { IsArray, IsInt, IsPositive, ValidateNested, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -19,9 +19,9 @@ class MatchSetDto {
 }
 
 export class CreateMatchDto {
-  @IsInt()
-  @ApiProperty({ description: '리그 ID', example: 1 })
-  leagueId: number;
+  @ApiProperty({ description: '시즌 리그 ID' })
+  @IsNumber()
+  seasonLeagueId: number;
 
   @IsInt()
   @ApiProperty({ description: '선수1 ID', example: 1 })
