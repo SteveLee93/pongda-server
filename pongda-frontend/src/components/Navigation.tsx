@@ -23,19 +23,7 @@ export default function Navigation() {
           href="/leagues" 
           className="text-gray-600 hover:text-blue-500 transition-colors"
         >
-          리그전
-        </Link>
-        <Link 
-          href="/tournaments" 
-          className="text-gray-600 hover:text-blue-500 transition-colors"
-        >
-          대회
-        </Link>
-        <Link 
-          href="/venues" 
-          className="text-gray-600 hover:text-blue-500 transition-colors"
-        >
-          탁구장
+          리그목록
         </Link>
       </div>
 

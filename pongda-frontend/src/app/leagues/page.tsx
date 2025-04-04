@@ -2,7 +2,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import Link from 'next/link';
-import Navigation from '@/app/components/Navigation';
+import Navigation from '@/components/Navigation';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
@@ -84,19 +84,19 @@ export default function LeagueListPage() {
 
   if (isLoading) {
     return (
-      <>
+      <div className="max-w-4xl mx-auto p-4">
         <Navigation />
         <p className="text-center mt-10">로딩 중...</p>
-      </>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <>
+      <div className="max-w-4xl mx-auto p-4">
         <Navigation />
         <p className="text-center mt-10 text-red-500">리그 불러오기 실패</p>
-      </>
+      </div>
     );
   }
 
